@@ -101,9 +101,7 @@ export default async function AdminDashboard() {
                                     <div>
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-neutral-500 border-b border-neutral-900 pb-3 mb-4 gap-1.5">
                                             <div className="flex flex-col gap-0.5">
-                                                {/* Displays the Operator's Stored Phone Number Node */}
                                                 <span>Node: <strong className="text-neutral-300 font-mono">{entry.operatorName}</strong></span>
-                                                {/* Statically or dynamically displays the Operator Name context if available */}
                                                 {entry.username && (
                                                     <span className="text-neutral-400 font-medium">Operator: <span className="text-neutral-200">{entry.username}</span></span>
                                                 )}
@@ -135,22 +133,28 @@ export default async function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    {/* Calculated Process Dynamic Timeline Block */}
-                                    <div className="grid grid-cols-3 gap-1.5 border-t border-neutral-900 pt-4 bg-neutral-950/60 p-3 rounded-xl text-center items-center">
+                                    {/* Calculated Process Dynamic Timeline Block - Expanded to 4 Columns */}
+                                    <div className="grid grid-cols-4 gap-1 border-t border-neutral-900 pt-4 bg-neutral-950/60 p-2 rounded-xl text-center items-center">
                                         <div>
-                                            <div className="text-[9px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">Initial End</div>
-                                            <div className="text-[11px] sm:text-xs text-neutral-300 font-mono font-semibold">
+                                            <div className="text-[8px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">Initial End</div>
+                                            <div className="text-[10px] text-neutral-300 font-mono font-semibold">
                                                 {new Date(entry.currentEndDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="text-[9px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">Extension</div>
-                                            <div className="text-[11px] sm:text-xs text-amber-400 font-black">+{entry.extensionDays}D</div>
+                                            <div className="text-[8px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">Extension</div>
+                                            <div className="text-[10px] text-amber-400 font-black">+{entry.extensionDays}D</div>
                                         </div>
                                         <div>
-                                            <div className="text-[9px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">New Target</div>
-                                            <div className="text-[11px] sm:text-xs text-emerald-400 font-mono font-black">
+                                            <div className="text-[8px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">New Target</div>
+                                            <div className="text-[10px] text-emerald-400 font-mono font-black">
                                                 {new Date(entry.newEndDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-[8px] uppercase tracking-wider font-bold text-neutral-500 mb-0.5">Final Report</div>
+                                            <div className="text-[10px] text-cyan-400 font-mono font-black">
+                                                {entry.finalReportDate ? new Date(entry.finalReportDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' }) : 'N/A'}
                                             </div>
                                         </div>
                                     </div>
