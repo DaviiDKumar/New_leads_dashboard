@@ -2,9 +2,11 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
+import dbConnect from '@/lib/mongodb';
+import User from '@/models/User';
 import { handleLogoutAction } from '@/app/actions/authActions';
 import UserFormClient from './UserFormClient';
-import { LogOut, LayoutDashboard } from 'lucide-react';
+import { LogOut, LayoutDashboard, User as UserIcon } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +23,11 @@ export default async function UserDashboard() {
   } catch {
     redirect('/auth/login');
   }
+
+  // Fetch the user's real name directly from MongoDB using the token payload
+  await dbConnect();
+  const userProfile = await User.findById(decoded.userId).lean();
+  const currentUsername = userProfile?.username || 'Operator';
 
   async function logout() {
     'use server';
@@ -53,7 +60,10 @@ export default async function UserDashboard() {
               <LayoutDashboard className="h-5 w-5 text-neutral-400" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-neutral-100">Operator Workspace</h1>
+              {/* Display the actual username retrieved from the DB */}
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-neutral-100 flex items-center gap-2">
+                Welcome, {currentUsername}
+              </h1>
               <p className="text-xs text-neutral-500 font-medium mt-0.5">
                 Node Connection: <span className="text-neutral-300 font-mono">{decoded.phoneNumber}</span>
               </p>
@@ -78,7 +88,8 @@ export default async function UserDashboard() {
             <p className="text-xs text-neutral-500 mt-1 leading-relaxed">Input incoming caller metrics, account statuses, and duration parameters directly into the database node.</p>
           </div>
 
-          <UserFormClient />
+          {/* Pass the username directly down to the client layout component */}
+          <UserFormClient operatorUsername={currentUsername} />
         </section>
 
       </div>
