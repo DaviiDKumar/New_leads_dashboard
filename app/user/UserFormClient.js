@@ -20,6 +20,7 @@ export default function UserFormClient({ operatorUsername }) {
   const [status, setStatus] = useState({ error: '', success: false });
   const [isPending, startTransition] = useTransition();
 
+  // Automatically compute the calculated new end date on layout input shifts
   useEffect(() => {
     if (formData.currentEndDate) {
       const current = new Date(formData.currentEndDate);
@@ -37,6 +38,7 @@ export default function UserFormClient({ operatorUsername }) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Central submission dispatcher mapped to the UI action button
   const triggerDataCommit = async () => {
     setStatus({ error: '', success: false });
 
@@ -53,21 +55,28 @@ export default function UserFormClient({ operatorUsername }) {
     }
 
     startTransition(async () => {
-      // Append the operator username to the form data payload explicitly
+      // Combines form metrics along with the dynamically passed dashboard prop
       const commitPayload = {
         ...formData,
         username: operatorUsername
       };
 
+      // FIXED: Now accurately passes commitPayload instead of the empty formData array
       const result = await handleCreateEntry(commitPayload);
       
       if (result?.error) {
         setStatus({ error: result.error, success: false });
       } else {
         setStatus({ error: '', success: true });
+        // Wipe variables cleanly upon successful cluster registration
         setFormData({
-          clientName: '', email: '', phoneNo: '', address: '',
-          currentEndDate: '', extensionDays: '0', newEndDate: '',
+          clientName: '', 
+          email: '', 
+          phoneNo: '', 
+          address: '',
+          currentEndDate: '', 
+          extensionDays: '0', 
+          newEndDate: '',
           finalReportDate: ''
         });
         
@@ -78,6 +87,7 @@ export default function UserFormClient({ operatorUsername }) {
 
   return (
     <div className="space-y-5">
+      
       {/* HUD SYSTEM STATE ALERTS */}
       {status.error && (
         <div className="flex items-center gap-3 border border-red-500/20 bg-red-500/10 p-4 rounded-xl text-xs font-medium text-red-400">
@@ -93,8 +103,10 @@ export default function UserFormClient({ operatorUsername }) {
         </div>
       )}
 
-      {/* INPUT GRID FIELDS */}
+      {/* MOBILE-FIRST GRID: 1 column on mobile, splits to 2 on desktop screens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        {/* Client Name Input Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Client Full Name</label>
           <div className="relative group">
@@ -112,6 +124,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Email Address Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Client Email Address</label>
           <div className="relative group">
@@ -130,6 +143,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Contact Field Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Contact Phone Number</label>
           <div className="relative group">
@@ -147,6 +161,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Address Location Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Physical Residence Address</label>
           <div className="relative group">
@@ -164,6 +179,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Initial End Date Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Current Term End Date</label>
           <div className="relative">
@@ -181,6 +197,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Numerical Incrementor Extension Days */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Extension Metric (Days)</label>
           <div className="relative">
@@ -200,6 +217,7 @@ export default function UserFormClient({ operatorUsername }) {
           </div>
         </div>
 
+        {/* Final Report Date Selector */}
         <div className="space-y-1.5 sm:col-span-2">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Final Report Date</label>
           <div className="relative">
@@ -216,9 +234,10 @@ export default function UserFormClient({ operatorUsername }) {
             />
           </div>
         </div>
+
       </div>
 
-      {/* CALCULATED RESULTS PANEL */}
+      {/* COMPUTED RESULTS WINDOW PANEL */}
       {formData.newEndDate && (
         <div className="border border-neutral-800 bg-neutral-950/50 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300">
           <div>
@@ -231,7 +250,7 @@ export default function UserFormClient({ operatorUsername }) {
         </div>
       )}
 
-      {/* SUBMIT BUTTON */}
+      {/* INTERACTION TRANSMISSION SWITCH EXECUTOR */}
       <button
         type="button"
         onClick={triggerDataCommit}
@@ -253,6 +272,7 @@ export default function UserFormClient({ operatorUsername }) {
           )}
         </span>
       </button>
+      
     </div>
   );
 }
