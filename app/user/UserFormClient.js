@@ -13,12 +13,14 @@ export default function UserFormClient() {
     address: '',
     currentEndDate: '',
     extensionDays: '0',
-    newEndDate: ''
+    newEndDate: '',
+    finalReportDate: '' // UPDATED: Added final report tracking token
   });
   
   const [status, setStatus] = useState({ error: '', success: false });
   const [isPending, startTransition] = useTransition();
 
+  // Automatically compute the calculated new end date on layout input shifts
   useEffect(() => {
     if (formData.currentEndDate) {
       const current = new Date(formData.currentEndDate);
@@ -36,10 +38,19 @@ export default function UserFormClient() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Central submission dispatcher mapped to the UI action button
   const triggerDataCommit = async () => {
     setStatus({ error: '', success: false });
 
-    if (!formData.clientName || !formData.email || !formData.phoneNo || !formData.address || !formData.currentEndDate) {
+    // UPDATED: Added finalReportDate parameter visibility checking code
+    if (
+      !formData.clientName || 
+      !formData.email || 
+      !formData.phoneNo || 
+      !formData.address || 
+      !formData.currentEndDate ||
+      !formData.finalReportDate
+    ) {
       setStatus({ error: 'All tracking parameters are strictly required to save.', success: false });
       return;
     }
@@ -51,9 +62,16 @@ export default function UserFormClient() {
         setStatus({ error: result.error, success: false });
       } else {
         setStatus({ error: '', success: true });
+        // Wipe variables cleanly upon successful cluster registration
         setFormData({
-          clientName: '', email: '', phoneNo: '', address: '',
-          currentEndDate: '', extensionDays: '0', newEndDate: ''
+          clientName: '', 
+          email: '', 
+          phoneNo: '', 
+          address: '',
+          currentEndDate: '', 
+          extensionDays: '0', 
+          newEndDate: '',
+          finalReportDate: '' // UPDATED: Clear field state structural token
         });
         
         setTimeout(() => setStatus(prev => ({ ...prev, success: false })), 4000);
@@ -82,7 +100,7 @@ export default function UserFormClient() {
       {/* MOBILE-FIRST GRID: 1 column on mobile, splits to 2 on desktop screens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         
-        {/* Full Name Block */}
+        {/* Client Name Input Block */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Client Full Name</label>
           <div className="relative group">
@@ -192,6 +210,25 @@ export default function UserFormClient() {
             />
           </div>
         </div>
+
+        {/* UPDATED: Final Report Date Field Selector Input Box Block */}
+        <div className="space-y-1.5 sm:col-span-2">
+          <label className="text-[11px] font-semibold tracking-wider text-neutral-400 pl-0.5">Final Report Date</label>
+          <div className="relative">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500">
+              <Calendar size={16} />
+            </div>
+            <input 
+              name="finalReportDate" 
+              type="date" 
+              value={formData.finalReportDate} 
+              onChange={handleInputChange} 
+              disabled={isPending}
+              className="h-12 w-full border border-white/10 rounded-xl bg-neutral-900/30 pl-10 pr-4 text-sm text-white outline-none transition-all focus:border-white/30 focus:bg-neutral-900/80 [color-scheme:dark]" 
+            />
+          </div>
+        </div>
+
       </div>
 
       {/* COMPUTED RESULTS WINDOW PANEL */}

@@ -35,15 +35,23 @@ export async function handleCreateEntry(data) {
       return { error: 'Unauthorized profile authorization context.' };
     }
 
-    // Verify parameter integrity
-    if (!data.clientName || !data.email || !data.phoneNo || !data.address || !data.currentEndDate) {
+    // UPDATED: Added finalReportDate parameter validation checks
+    if (
+      !data.clientName || 
+      !data.email || 
+      !data.phoneNo || 
+      !data.address || 
+      !data.currentEndDate ||
+      !data.finalReportDate
+    ) {
       return { error: 'All primary record parameters are strictly required.' };
     }
 
     // Write straight to MongoDB Atlas collection
     await Entry.create({
       userId: session.userId,
-      operatorName: session.phoneNumber, // Automatically tracks using caller's unique phone number
+      operatorName: session.phoneNumber, // Tracks using caller's unique phone number
+      username: session.username,        // UPDATED: Stores caller's real profile username string
       clientName: data.clientName.trim(),
       email: data.email.trim().toLowerCase(),
       phoneNo: data.phoneNo.trim(),
@@ -51,6 +59,7 @@ export async function handleCreateEntry(data) {
       currentEndDate: new Date(data.currentEndDate),
       extensionDays: Number(data.extensionDays) || 0,
       newEndDate: new Date(data.newEndDate),
+      finalReportDate: new Date(data.finalReportDate), // UPDATED: Maps the final report date structure
     });
 
     revalidatePath('/user');

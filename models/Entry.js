@@ -16,6 +16,11 @@ const EntrySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // New field added to log the operator full name to the record
+    username: {
+      type: String,
+      required: true,
+    },
     // Client Information
     clientName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
@@ -25,6 +30,7 @@ const EntrySchema = new mongoose.Schema(
     currentEndDate: { type: Date, required: true },
     extensionDays: { type: Number, required: true, min: 0 },
     newEndDate: { type: Date, required: true },
+    finalReportDate: { type: Date, required: true }, // Added field
   },
   {
     timestamps: true,
