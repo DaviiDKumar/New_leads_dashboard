@@ -16,21 +16,19 @@ const EntrySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // New field added to log the operator full name to the record
     username: {
       type: String,
-      required: true,
+      required: false, // Changed to false to prevent database validation blockages
+      default: 'Unknown Operator'
     },
-    // Client Information
     clientName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
     phoneNo: { type: String, required: true, trim: true },
     address: { type: String, required: true, trim: true },
-    // Timeline Details
     currentEndDate: { type: Date, required: true },
-    extensionDays: { type: Number, required: true, min: 0 },
+    extensionDays: { type: Number, required: true, min: 0, default: 0 },
     newEndDate: { type: Date, required: true },
-    finalReportDate: { type: Date, required: true }, // Added field
+    finalReportDate: { type: Date, required: true },
   },
   {
     timestamps: true,
