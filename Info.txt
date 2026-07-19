@@ -1,0 +1,65 @@
+Here is the clean, structured summary of your entire application blueprint and operational cycle. You can copy and paste this directly into your workflow.txt file for your reference.
+
+Unified Leads Dashboard - Workflow & Architecture Spec
+1. System Overview
+A lightweight, full-stack Next.js Application Router system optimized for 1 Admin and 10 Tele-callers. The application eliminates global state managers (no Zustand/Redux) by using server-side rendering, standard React states, and Next.js Server Actions with dynamic cache revalidation (revalidatePath).
+
+2. Technical Directory Blueprint
+Plaintext
+unified-leads-dashboard/
+├── app/                            # Next.js App Router (File-based routing)
+│   ├── layout.js                   # Global HTML framework & Tailwind configuration
+│   ├── page.js                     # Root entry point (Session gateway)
+│   │
+│   ├── auth/                       # Isolated Authentication Paths
+│   │   ├── login/page.js          # Portal Login view
+│   │   └── register/page.js       # Portal Registration view
+│   │
+│   ├── admin/                      # Master Administration Folder
+│   │   └── page.js                 # Admin panel view (Fetches ALL records)
+│   │
+│   ├── user/                       # Tele-caller Workspace Folder
+│   │   └── page.js                 # Personal worker view (Fetches assigned only)
+│   │
+│   └── actions/                    # Server Actions (Pure Server-side Functions)
+│       ├── authActions.js          # Session checks, registration, role redirects
+│       └── leadActions.js          # MongoDB database mutations & validations
+│
+├── components/                     # Component Architecture
+│   └── Navbar.jsx                  # Single navigation bar (Adapts dynamically by role)
+│
+├── models/                         # Database Mongoose Schemas
+│   ├── User.js                     # Schema for staff authentication and roles
+│   └── Lead.js                     # Schema for lead records (Enforces 'review' array tag)
+│
+├── lib/                            # Application Configurations
+│   └── mongodb.js                  # Cached MongoDB Atlas instance provider
+│
+├── .env.local                      # Private system credential string keys
+└── package.json                    # Project dependency manifest
+3. Data & Storage Strategy
+Authentication & Route Guards (Server-Side): Secure, encrypted tokens containing the User's ID and Role are stored in an httpOnly Cookie. Server Components inspect this cookie on page mount to grant access or trigger instant redirect() actions.
+
+UI Customization (Client-Side): Public information (e.g., username, loginId) is saved in the browser's localStorage on login success and loaded safely into interactive components using React's native useEffect loop to avoid server-side hydration mismatches.
+
+4. Daily Operational Loop
+Phase 1: Morning Distribution (The Admin)
+The Admin logs into /admin and uploads a fresh customer Excel/CSV spreadsheet.
+
+The system parses the document into a JSON array, runs a Round-Robin cycle, and automatically splits the data evenly (1/10th shares) among the 10 active tele-callers.
+
+Each row is stamped with a target caller's loginId and defaults to a status validation tag of "new".
+
+Phase 2: Daytime Processing & Oversight (The Callers & Admin)
+Tele-callers access /user. The system queries MongoDB Atlas on the server and displays only active rows matching their specific profile ID.
+
+As callers dial, they update individual rows via local, layout-stable selectors. Actions are fired via React useTransition hooks to prevent visual lag or layout jumps while mutations process.
+
+If a caller is absent, the Admin uses an update utility to sweep and reassign that worker's pending leads to another active agent's workspace instantly.
+
+Phase 3: Nighttime Handshake & Cleanup
+The Tele-caller EOD: At the end of the shift, callers trigger an End-of-Day report action. Any unresolved leads (stuck in new or in-progress) are instantly updated to a status tag of review. These rows vanish from the user interface immediately, ensuring a clean slate for the next shift.
+
+The Admin Export: All leads tagged as review pull back into a central repository under the Admin's console. The Admin clicks "Export Daily Report," downloading a unified master Excel file detailing the day's outcomes (completed, rejected, review).
+
+The Reset: The Admin clears out the daily database collections, merges the unresolved review rows into a fresh spreadsheet on their local desktop, and prepares to upload it again the following morning.
